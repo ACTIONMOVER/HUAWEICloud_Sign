@@ -33,21 +33,18 @@ class HuaWei(BaseHuaWei):
 
 
     async def login(self, username, password):
-        await self.page.waitForSelector('input[name="userAccount"]')
+        await self.page.goto('https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fdevcloud.huaweicloud.com%2Fbonususer%2Fhome%2Fmakebonus&quickLogin=true#/login2', {'waitUntil': 'load'})
+        self.logger.info(f'jump')
+        await asyncio.sleep(5)
+        await self.page.waitForSelector('#personalAccountInputId > input')
         await asyncio.sleep(1)
-        await self.page.type('input[name="userAccount"]', username, {'delay': 10})
-        await asyncio.sleep(3)
-        await self.page.type('.hwid-input-pwd', password, {'delay': 10})
-        await asyncio.sleep(5)
-        await self.page.click('.hwid-list-row-active')
-        await self.page.type('.hwid-input-pwd', password, {'delay': 10})
+        await self.page.type('#personalAccountInputId > input', username, {'delay': 10})
+        self.logger.info(f'username')
+        await self.page.type('#personalPasswordInputId > input', password, {'delay': 10})
+        self.logger.info(f'password')
         await asyncio.sleep(2)
-        await self.page.click('.normalBtn')
-        await asyncio.sleep(5)
-        self.logger.info(f'跳过升级')
-        await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/makebonus', {'waitUntil': 'load'})
-        await asyncio.sleep(5)
-
+        await self.page.click('#btn_submit')
+        self.logger.info(f'button')
 
     async def iam_login(self, username, password, parent):
         self.parent_user = os.environ.get('PARENT_USER', parent)
